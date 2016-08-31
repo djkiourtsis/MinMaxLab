@@ -1,5 +1,11 @@
+import java.util.ArrayList;
+
 
 public class OurPlayer extends Player{
+	
+	//n = name of the player
+	//t = the number corresponding to your turn
+	//l = timelimit for your move in seconds
 	
 	public OurPlayer(String n, int t, int l)
 	{
@@ -8,31 +14,22 @@ public class OurPlayer extends Player{
 
 	public Move getMove(StateTree state)
 	{
-		for(int j=0; j<state.columns; j++)
-		{
-			for(int i=0; i<state.rows; i++)
-			{
-				
-				if(state.boardMatrix[i][j] == 0)
-				{
-					return new Move(false, j);
-				}
-				
-//				try{Thread.sleep(15000);}
-//				catch(InterruptedException ex){Thread.currentThread().interrupt();}
-				
-//				if(this.turn == 1)
-//					return new Move(false, 0);
-//				if(this.turn == 2)
-//					return new Move(false, 1);	
-			}
-			
-//			if((this.turn == 1 && !state.pop1) || (this.turn == 2 && !state.pop2))
-//			{
-//				return new Move(true, 0);	
-//			}
-			
-		}
-		return new Move(false, 100);
+		return new Move(false,0);
+	}
+	
+	public OurStateTree initializeStateTree(OurStateTree root, int d){
+		return null;
+	}
+	
+	public Integer getUtilityScore(StateTree state){
+		return 0;
+	}
+	
+	public void populateCons(StateTree board, ArrayList<PieceConnection> ally, ArrayList<PieceConnection> enemy){
+		return;
+	}
+	
+	public Move miniMax(OurStateTree boardTree){
+		return new Move(false,1);
 	}
 }
