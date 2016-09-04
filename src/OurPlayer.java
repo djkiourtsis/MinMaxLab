@@ -54,6 +54,19 @@ public class OurPlayer extends Player{
 		ArrayList<BoardPoint> poppableFriendly = new ArrayList<BoardPoint>();
 		ArrayList<BoardPoint> poppableOpponent = new ArrayList<BoardPoint>();
 		
+		int win = Referee.checkForWinner(state);
+		if(win>0){
+			if(turn==win){
+				return Integer.MAX_VALUE;
+			}
+			else if(win==3){
+				return 0;
+			}
+			else{
+				return Integer.MIN_VALUE;
+			}
+		}
+		
 		if(this.turn==1){opponentTurn=2;} // Opponent is turn 2 if we are turn 1
 		
 		//  Populate piece connections and poppable piece lists.
@@ -72,18 +85,12 @@ public class OurPlayer extends Player{
 		//  Calculate the utility score for allied pieces.
 		Integer allyUtility = 0;
 		for(int i = 0; i < connectionsFriendly.size(); i++){
-		    if(connectionsFriendly.get(i).getPieces().size() >= state.winNumber){ // Friendly win or tie
-		        return Integer.MAX_VALUE;
-		    }
 		    allyUtility += (int) Math.pow(connectionsFriendly.get(i).getPieces().size(), 2) * connectionsFriendly.get(i).numAdjacentEmpty;
 		}
 		
 		//  Calculate the utility score for opponent pieces.
 		Integer opponentUtility = 0;
-		for(int i = 0; i < connectionsFriendly.size(); i++){
-		    if(connectionsFriendly.get(i).getPieces().size() >= state.winNumber){ // Enemy win
-                return Integer.MIN_VALUE;
-            }
+		for(int i = 0; i < connectionsOpponent.size(); i++){
             opponentUtility += (int) Math.pow(connectionsOpponent.get(i).getPieces().size(), 2) * connectionsOpponent.get(i).numAdjacentEmpty;
         }
 		if(state.turn == this.turn){ // Favor aggressive positions when you have the next move.
@@ -314,7 +321,7 @@ public class OurPlayer extends Player{
 		}
 		best = boardTree.children.get(0).prevMove;
 		for(int i = 0; i < boardTree.children.size(); i++){
-			int var = max(boardTree.children.get(i), Integer.MIN_VALUE, Integer.MAX_VALUE);
+			int var = min(boardTree.children.get(i), Integer.MIN_VALUE, Integer.MAX_VALUE);
 			if(var > bestUtility){
 				best = boardTree.moveList().get(i);
 				bestUtility = var;
@@ -331,12 +338,11 @@ public class OurPlayer extends Player{
 		}
 		else{
 			for(int i = 0; i < boardTree.children.size(); i++){
-				int tmpUtilityScore = min(boardTree.children.get(i), bestMax, beta);
+				int tmpUtilityScore = min(boardTree.children.get(i), alpha, bestMax);
 				if(bestMax < tmpUtilityScore){
 					bestMax = tmpUtilityScore;
 				}
 				if(bestMax >= beta){
-					alpha = tmpUtilityScore;
 					return tmpUtilityScore;
 				}
 			}
@@ -357,7 +363,6 @@ public class OurPlayer extends Player{
 					bestMin = tmpUtilityScore;
 				}
 				if(bestMin <= alpha){
-					beta = tmpUtilityScore;
 					return tmpUtilityScore;
 				}
 			}
