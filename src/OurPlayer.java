@@ -14,7 +14,10 @@ public class OurPlayer extends Player{
 
 	public Move getMove(StateTree state)
 	{
-		return new Move(false,0);
+		OurStateTree stateTree = new OurStateTree(state, null);
+		initializeStateTree(stateTree, 2);
+		Move bestMove = miniMax(stateTree);
+		return bestMove;
 	}
 	
 	public void initializeStateTree(OurStateTree root, int d){ 
@@ -24,7 +27,7 @@ public class OurPlayer extends Player{
 		else{
 			root.genChild();
 			for(int i = 0; i < root.children.size(); i++){
-				if(Referee.checkForWinner(root.getStateTree().children.get(i)) == 0){
+				if(Referee.checkForWinner(root.children.get(i).getStateTree()) == 0){
 					initializeStateTree(root.children.get(i), d - 1);
 				}
 			}
@@ -311,7 +314,7 @@ public class OurPlayer extends Player{
 	
 	public Integer max(OurStateTree boardTree, Integer alpha, Integer beta){
 		Integer bestMax = Integer.MIN_VALUE;
-		if(boardTree.getStateTree().children.size() == 0){
+		if(boardTree.children.size() == 0){
 			return getUtilityScore(boardTree.getStateTree());
 		}
 		else{
@@ -331,7 +334,7 @@ public class OurPlayer extends Player{
 	
 	public Integer min(OurStateTree boardTree, Integer alpha, Integer beta){
 		Integer bestMin = Integer.MAX_VALUE;
-		if(boardTree.getStateTree().children.size() == 0){
+		if(boardTree.children.size() == 0){
 			return getUtilityScore(boardTree.getStateTree());
 		}
 		
