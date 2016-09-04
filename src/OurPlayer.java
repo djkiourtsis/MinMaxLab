@@ -22,7 +22,7 @@ public class OurPlayer extends Player{
 	}
 	
 	public Integer getUtilityScore(StateTree state){
-		int utilityScore = 0;
+		Integer utilityScore = 0;
 		int opponentTurn = 1; // Assume opponent is turn 1
 		ArrayList<PieceConnection> connectionsFriendly = new ArrayList<PieceConnection>();
 		ArrayList<PieceConnection> connectionsOpponent = new ArrayList<PieceConnection>();
@@ -45,15 +45,29 @@ public class OurPlayer extends Player{
 		populateCons(state, connectionsFriendly, connectionsOpponent);
 		
 		//  Calculate the utility score for allied pieces.
+		Integer allyUtility = 0;
 		for(int i = 0; i < connectionsFriendly.size(); i++){
-		    utilityScore += Math.pow(connectionsFriendly.get(i).getPieces().size(), 2) * connectionsFriendly.get(i).numAdjacentEmpty;
+		    if(connectionsFriendly.get(i).getPieces().size() >= state.winNumber){ // Friendly win or tie
+		        return Integer.MAX_VALUE;
+		    }
+		    allyUtility += (int) Math.pow(connectionsFriendly.get(i).getPieces().size(), 2) * connectionsFriendly.get(i).numAdjacentEmpty;
 		}
 		
 		//  Calculate the utility score for opponent pieces.
+		Integer opponentUtility = 0;
 		for(int i = 0; i < connectionsFriendly.size(); i++){
-            utilityScore -= Math.pow(connectionsOpponent.get(i).getPieces().size(), 2) * connectionsOpponent.get(i).numAdjacentEmpty;
+		    if(connectionsFriendly.get(i).getPieces().size() >= state.winNumber){ // Enemy win
+                return Integer.MIN_VALUE;
+            }
+            opponentUtility += (int) Math.pow(connectionsOpponent.get(i).getPieces().size(), 2) * connectionsOpponent.get(i).numAdjacentEmpty;
         }
-		
+		if(state.turn == this.turn){ // Favor aggressive positions when you have the next move.
+		    allyUtility = (int) (Math.round(allyUtility * 1.5));
+		}
+		else{ // Favor defensive positions when your opponent has the next move.
+            opponentUtility = (int) (Math.round(allyUtility * 1.5));
+        }
+		utilityScore = allyUtility-opponentUtility;
 		return utilityScore;
 	}
 	
