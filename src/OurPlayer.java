@@ -20,9 +20,15 @@ public class OurPlayer extends Player{
 	    // Decide a move.
 	    long elapsedTime = System.nanoTime() - moveStartTime;
 	    double secondsElapsed = (double)elapsedTime / 1000000000.0;
-	    OurStateTree stateTree = new OurStateTree(state, null);
-		initializeStateTree(stateTree, 2);
-		Move bestMove = miniMax(stateTree);
+	    Move bestMove = null;
+	    for(int i = 1; i < 10; i++){
+	        OurStateTree stateTree = new OurStateTree(state, null);
+		    initializeStateTree(stateTree, i);
+		    Move m = miniMax(stateTree);
+		    if(m != null){
+		        bestMove = m;
+		    }
+	    }
 		return bestMove;
 	}
 	
