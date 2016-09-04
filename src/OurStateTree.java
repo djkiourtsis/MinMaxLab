@@ -5,10 +5,14 @@ public class OurStateTree{
 	
 	StateTree state;
 	Move prevMove;
+	ArrayList<OurStateTree> children;
+	OurStateTree parent;
 	
 	public OurStateTree(StateTree state, Move prevMove) {
 		this.state = state;
 		this.prevMove = prevMove;
+		this.parent = null;
+		this.children = new ArrayList<OurStateTree>();
 	}
 	
 	public StateTree getStateTree(){
@@ -65,6 +69,9 @@ public class OurStateTree{
 				}
 			}
 			childState.makeMove(move.get(i));
+			OurStateTree ourChild = new OurStateTree(childState, move.get(i));
+			ourChild.parent = this;
+			this.children.add(ourChild);
 		}
 	}
 }
