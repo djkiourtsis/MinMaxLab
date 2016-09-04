@@ -58,7 +58,212 @@ public class OurPlayer extends Player{
 	}
 	
 	public void populateCons(StateTree board, ArrayList<PieceConnection> ally, ArrayList<PieceConnection> enemy){
-		return;
+		int lastPiece = -1;
+		int opponentTurn = 1; // Assume opponent is turn 1
+		PieceConnection currentConnection = new PieceConnection(0);
+        if(this.turn==1){opponentTurn=2;} // Opponent is turn 2 if we are turn 1
+		
+	    for(int r = 0; r < board.rows; r++){ // Loop rows
+		    for(int c = 0; c < board.columns; c++){
+		        
+		        if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
+		            currentConnection = new PieceConnection(lastPiece+1);
+		            currentConnection.AddPiece(new BoardPoint(r,c));
+		        }
+		        else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
+		            currentConnection.AddPiece(new BoardPoint(r,c));
+		        }
+		        else{ // Ending a connection
+		            if(lastPiece == this.turn){
+		                if(board.boardMatrix[r][c] == 0){ // No new connection
+		                    currentConnection.AddEmpty(1);
+		                    ally.add(currentConnection);
+		                }
+		                else{ // New opponent connection
+		                    ally.add(currentConnection);
+		                    currentConnection = new PieceConnection(0);
+		                    currentConnection.AddPiece(new BoardPoint(r,c));
+		                }
+		            }
+		            if(lastPiece == opponentTurn){
+		                if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            enemy.add(currentConnection);
+                        }
+                        else{ // New ally connection
+                            enemy.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+		            }
+		        }
+		        lastPiece = board.boardMatrix[r][c];
+		    }
+		    if(lastPiece == this.turn){ // Ally connection at end of row
+		        ally.add(currentConnection);
+		    }
+		    else if(lastPiece == opponentTurn){ // Opponent connection at end of row
+		        enemy.add(currentConnection);
+            }
+		    lastPiece = -1; // Prepare for new row
+		}
+	    
+	    for(int c = 0; c < board.columns; c++){ // Loop columns
+            for(int r = 0; r < board.rows; r++){
+                
+                if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
+                    currentConnection = new PieceConnection(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else{ // Ending a connection
+                    if(lastPiece == this.turn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            ally.add(currentConnection);
+                        }
+                        else{ // New opponent connection
+                            ally.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                    if(lastPiece == opponentTurn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            enemy.add(currentConnection);
+                        }
+                        else{ // New ally connection
+                            enemy.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                }
+                lastPiece = board.boardMatrix[r][c];
+            }
+            if(lastPiece == this.turn){ // Ally connection at end of row
+                ally.add(currentConnection);
+            }
+            else if(lastPiece == opponentTurn){ // Opponent connection at end of row
+                enemy.add(currentConnection);
+            }
+            lastPiece = -1; // Prepare for new row
+        }
+	    
+	    for(int n = board.rows-board.winNumber; n > -1 * (board.columns-(board.winNumber-1)); n--){ // Loop diagonal up-right.  Ignore lines with < winNumber spots.
+	        int r = 0;
+            int c = 0;
+            if(n > -1){ // Left edge of board
+                r = n;
+            }
+            else{ // Bottom edge of board
+                c = -1*n;
+            }
+	        while(c < board.columns && r < board.rows){
+                
+                if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
+                    currentConnection = new PieceConnection(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else{ // Ending a connection
+                    if(lastPiece == this.turn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            ally.add(currentConnection);
+                        }
+                        else{ // New opponent connection
+                            ally.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                    if(lastPiece == opponentTurn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            enemy.add(currentConnection);
+                        }
+                        else{ // New ally connection
+                            enemy.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                }
+                lastPiece = board.boardMatrix[r][c];
+                r++; // Move up-right
+                c++;
+            }
+            if(lastPiece == this.turn){ // Ally connection at end of row
+                ally.add(currentConnection);
+            }
+            else if(lastPiece == opponentTurn){ // Opponent connection at end of row
+                enemy.add(currentConnection);
+            }
+            lastPiece = -1; // Prepare for new row
+        }
+	    
+	    for(int n = board.columns-board.winNumber; n > -1 * (board.rows-(board.winNumber-1)); n--){ // Loop diagonal down-right.  Ignore lines with < winNumber spots.
+            int r = board.rows-1;
+            int c = 0;
+            if(n > -1){
+                c = n;
+            }
+            else{
+                r += n;
+            }
+	        while(c < board.columns && r > 0){
+                
+                if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
+                    currentConnection = new PieceConnection(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
+                    currentConnection.AddPiece(new BoardPoint(r,c));
+                }
+                else{ // Ending a connection
+                    if(lastPiece == this.turn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            ally.add(currentConnection);
+                        }
+                        else{ // New opponent connection
+                            ally.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                    if(lastPiece == opponentTurn){
+                        if(board.boardMatrix[r][c] == 0){ // No new connection
+                            currentConnection.AddEmpty(1);
+                            enemy.add(currentConnection);
+                        }
+                        else{ // New ally connection
+                            enemy.add(currentConnection);
+                            currentConnection = new PieceConnection(0);
+                            currentConnection.AddPiece(new BoardPoint(r,c));
+                        }
+                    }
+                }
+                lastPiece = board.boardMatrix[r][c];
+                r--; // Move down-right
+                c++;
+            }
+            if(lastPiece == this.turn){ // Ally connection at end of row
+                ally.add(currentConnection);
+            }
+            else if(lastPiece == opponentTurn){ // Opponent connection at end of row
+                enemy.add(currentConnection);
+            }
+            lastPiece = -1; // Prepare for new row
+        }
+	    
+	    return;
 	}
 	
 	public Move miniMax(OurStateTree boardTree){
