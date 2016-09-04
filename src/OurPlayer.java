@@ -6,6 +6,8 @@ public class OurPlayer extends Player{
 	//n = name of the player
 	//t = the number corresponding to your turn
 	//l = timelimit for your move in seconds
+    
+	private long moveStartTime;
 	
 	public OurPlayer(String n, int t, int l)
 	{
@@ -14,6 +16,10 @@ public class OurPlayer extends Player{
 
 	public Move getMove(StateTree state)
 	{
+	    moveStartTime = System.nanoTime();
+	    // Decide a move.
+	    long elapsedTime = System.nanoTime() - moveStartTime;
+	    double secondsElapsed = (double)elapsedTime / 1000000000.0;
 		return new Move(false,0);
 	}
 	
