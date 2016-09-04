@@ -21,7 +21,7 @@ public class OurPlayer extends Player{
 	    long elapsedTime = System.nanoTime() - moveStartTime;
 	    double secondsElapsed = (double)elapsedTime / 1000000000.0;
 	    Move bestMove = null;
-	    for(int i = 1; i < 10; i++){
+	    for(int i = 1; i < 7; i++){ // STOP AT DEPTH 7 DUE TO RUNNING OUT OF MEMORY.
 	        OurStateTree stateTree = new OurStateTree(state, null);
 		    initializeStateTree(stateTree, i);
 		    Move m = miniMax(stateTree);
