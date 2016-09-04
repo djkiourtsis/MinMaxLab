@@ -23,34 +23,34 @@ public class OurStateTree{
 		return prevMove;
 	}
 	
-	public ArrayList<Move> moveList(StateTree node){
+	public ArrayList<Move> moveList(){
 		ArrayList<Move> LoM = new ArrayList<Move>();
 		
-		for(int j = 0; j < node.columns; j++){
+		for(int j = 0; j < this.state.columns; j++){
 			Move temp = new Move(false, j);
 			Move temp2 = new Move(true, j);
-			if (validMove(temp, node)){
+			if (validMove(temp)){
 				LoM.add(temp);
 			}
-			if (validMove(temp2, node)){
+			if (validMove(temp2)){
 				LoM.add(temp2);
 			}
 		}
 		return LoM;
 	}
 	
-	public boolean validMove(Move move, StateTree node){
-		if(!move.pop && node.boardMatrix[node.rows-1][move.column] != 0)
+	public boolean validMove(Move move){
+		if(!move.pop && this.state.boardMatrix[this.state.rows-1][move.column] != 0)
 		{
 			return false;
 		}
 		if(move.pop)
 		{
-			if(node.boardMatrix[0][move.column] != node.turn)
+			if(this.state.boardMatrix[0][move.column] != this.state.turn)
 			{
 				return false;
 			}
-			if((node.turn == 1 && node.pop1) || (node.turn == 2 && node.pop2))
+			if((this.state.turn == 1 && this.state.pop1) || (this.state.turn == 2 && this.state.pop2))
 			{
 				return false;
 			}
@@ -58,14 +58,14 @@ public class OurStateTree{
 		return true;
 	}
 	
-	public void genChild(StateTree node){
-		ArrayList<Move> move = moveList(node);
+	public void genChild(){
+		ArrayList<Move> move = moveList();
 		StateTree childState = null;
 		for(int i = 0; i < move.size(); i++){
-			childState = new RefereeBoard(node.rows, node.columns, node.winNumber, node.turn, node.pop1, node.pop2, node);
-			for(int row = 0; row < node.rows; row++){
-				for(int col = 0; col < node.columns; col++){
-					childState.boardMatrix[row][col] = node.boardMatrix[row][col];
+			childState = new RefereeBoard(this.state.rows, this.state.columns, this.state.winNumber, this.state.turn, this.state.pop1, this.state.pop2, this.state);
+			for(int row = 0; row < this.state.rows; row++){
+				for(int col = 0; col < this.state.columns; col++){
+					childState.boardMatrix[row][col] = this.state.boardMatrix[row][col];
 				}
 			}
 			childState.makeMove(move.get(i));

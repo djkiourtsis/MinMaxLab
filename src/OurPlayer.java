@@ -23,8 +23,18 @@ public class OurPlayer extends Player{
 		return new Move(false,0);
 	}
 	
-	public OurStateTree initializeStateTree(OurStateTree root, int d){
-		return null;
+	public void initializeStateTree(OurStateTree root, int d){ 
+		if(d == 0){
+			return;
+		}
+		else{
+			root.genChild();
+			for(int i = 0; i < root.children.size(); i++){
+				if(Referee.checkForWinner(root.getStateTree().children.get(i)) == 0){
+					initializeStateTree(root.children.get(i), d - 1);
+				}
+			}
+		}
 	}
 	
 	public Integer getUtilityScore(StateTree state){
@@ -287,6 +297,62 @@ public class OurPlayer extends Player{
 	}
 	
 	public Move miniMax(OurStateTree boardTree){
-		return new Move(false,1);
+		Move best = null;
+
+		int bestUtility = Integer.MIN_VALUE;
+		if(boardTree.children.size() == 0){
+			return best;
+		}
+		best = boardTree.children.get(0).prevMove;
+		for(int i = 0; i < boardTree.children.size(); i++){
+			int var = max(boardTree.children.get(i), Integer.MIN_VALUE, Integer.MAX_VALUE);
+			if(var > bestUtility){
+				best = boardTree.moveList().get(i);
+				bestUtility = var;
+			}
+			
+		}
+		return best;
+	}
+	
+	public Integer max(OurStateTree boardTree, Integer alpha, Integer beta){
+		Integer bestMax = Integer.MIN_VALUE;
+		if(boardTree.getStateTree().children.size() == 0){
+			return getUtilityScore(boardTree.getStateTree());
+		}
+		else{
+			for(int i = 0; i < boardTree.children.size(); i++){
+				int tmpUtilityScore = min(boardTree.children.get(i), bestMax, beta);
+				if(bestMax < tmpUtilityScore){
+					bestMax = tmpUtilityScore;
+				}
+				if(bestMax >= beta){
+					alpha = tmpUtilityScore;
+					return tmpUtilityScore;
+				}
+			}
+		}
+		return bestMax;
+	}
+	
+	public Integer min(OurStateTree boardTree, Integer alpha, Integer beta){
+		Integer bestMin = Integer.MAX_VALUE;
+		if(boardTree.getStateTree().children.size() == 0){
+			return getUtilityScore(boardTree.getStateTree());
+		}
+		
+		else{
+			for(int i = 0; i < boardTree.children.size(); i++){
+				int tmpUtilityScore = max(boardTree.children.get(i), alpha, bestMin);	
+				if(bestMin > tmpUtilityScore){
+					bestMin = tmpUtilityScore;
+				}
+				if(bestMin <= alpha){
+					beta = tmpUtilityScore;
+					return tmpUtilityScore;
+				}
+			}
+		}
+		return bestMin;
 	}
 }
