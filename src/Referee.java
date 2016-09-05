@@ -11,11 +11,11 @@ public class Referee
 {
 	// CHANGE THESE VALUES
 	static int boardRows = 6; // rows the board has
-	static int boardColumns = 7; // columns the board has
+	static int boardColumns = 11; // columns the board has
 	static int winNumber = 4; // how many pieces you need in a row to win
 	static int timeLimit = 10; // the time, in seconds, allowed for each player to provide a move
 	static Player player1 = new OurPlayer("Our", 1, timeLimit); // you should create your own player class and use it here
-	static Player player2 = new SimplePlayer("Opponent", 2, timeLimit);
+	static Player player2 = new OurPlayerTwo("Opponent", 2, timeLimit);
 	// STOP CHANGING THINGS
 	static StateTree board;
 	

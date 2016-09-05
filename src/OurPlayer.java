@@ -17,17 +17,27 @@ public class OurPlayer extends Player{
 	public Move getMove(StateTree state)
 	{
 		moveStartTime = System.nanoTime();
+		
+		int depthLimit;
+		depthLimit = (int) Math.floor(Math.log(Math.pow(9, 6))/Math.log(state.columns));// Limit the size of the iterative deepening tree (found through testing).
+		
 	    // Decide a move.
 	    long elapsedTime = System.nanoTime() - moveStartTime;
 	    double secondsElapsed = (double)elapsedTime / 1000000000.0;
-	    Move bestMove = null;
-	    for(int i = 1; i < 7; i++){ // STOP AT DEPTH 7 DUE TO RUNNING OUT OF MEMORY.
+	    Move bestMove = null; // Default if we can't run a search.
+	    for(int i = 1; i < depthLimit; i++){ // STOP AT DEPTH 7 DUE TO RUNNING OUT OF MEMORY.
 	        OurStateTree stateTree = new OurStateTree(state, null);
 		    initializeStateTree(stateTree, i);
+		    if(bestMove == null){
+		        bestMove = stateTree.children.get(0).getPrevMove(); // Default move.
+		    }
 		    Move m = miniMax(stateTree);
 		    if(m != null){
 		        bestMove = m;
 		    }
+		    elapsedTime = System.nanoTime() - moveStartTime;
+	        secondsElapsed = (double)elapsedTime / 1000000000.0;
+	        if(this.timeLimit - secondsElapsed <= 2){return bestMove;}
 	    }
 		return bestMove;
 	}
@@ -94,12 +104,34 @@ public class OurPlayer extends Player{
             opponentUtility += (int) Math.pow(connectionsOpponent.get(i).getPieces().size(), 2) * connectionsOpponent.get(i).numAdjacentEmpty;
         }
 		if(state.turn == this.turn){ // Favor aggressive positions when you have the next move.
-		    allyUtility = (int) (Math.round(allyUtility * 1.5));
+		    allyUtility = (int) (Math.round(allyUtility * 3));
 		}
 		else{ // Favor defensive positions when your opponent has the next move.
-            opponentUtility = (int) (Math.round(allyUtility * 1.5));
+            opponentUtility = (int) (Math.round(allyUtility * 2));
         }
 		utilityScore = allyUtility-opponentUtility;
+        for(int c = 0; c < state.columns; c++){
+            if(this.turn == state.boardMatrix[0][c]){
+                if(this.turn==1){
+                    if(!state.pop1){
+                        utilityScore += 3;
+                    }
+                    else if(!state.pop2){
+                        utilityScore += 3;
+                    }
+                }
+            }
+            else if(opponentTurn == state.boardMatrix[0][c]){
+                if(opponentTurn==1){
+                    if(!state.pop1){
+                        utilityScore -= 3;
+                    }
+                    else if(!state.pop2){
+                        utilityScore -= 3;
+                    }
+                }
+            }
+        }
 		return utilityScore;
 	}
 	
@@ -319,7 +351,7 @@ public class OurPlayer extends Player{
 		if(boardTree.children.size() == 0){
 			return best;
 		}
-		best = boardTree.children.get(0).prevMove;
+		//best = boardTree.children.get(0).prevMove;
 		for(int i = 0; i < boardTree.children.size(); i++){
 			int var = min(boardTree.children.get(i), Integer.MIN_VALUE, Integer.MAX_VALUE);
 			if(var > bestUtility){
@@ -338,13 +370,19 @@ public class OurPlayer extends Player{
 		}
 		else{
 			for(int i = 0; i < boardTree.children.size(); i++){
+			    long elapsedTime = System.nanoTime() - moveStartTime;
+		        double secondsElapsed = (double)elapsedTime / 1000000000.0;
+			    if(this.timeLimit - secondsElapsed <= 2){return bestMax;}
 				int tmpUtilityScore = min(boardTree.children.get(i), alpha, bestMax);
-				if(bestMax < tmpUtilityScore){
-					bestMax = tmpUtilityScore;
-				}
-				if(bestMax >= beta){
-					return tmpUtilityScore;
-				}
+                if(bestMax < tmpUtilityScore){
+                    bestMax = tmpUtilityScore;
+                }
+                if(bestMax >= beta){
+                    return bestMax;
+                }
+				if(alpha < tmpUtilityScore){
+                    alpha = tmpUtilityScore;
+                }
 			}
 		}
 		return bestMax;
@@ -358,12 +396,18 @@ public class OurPlayer extends Player{
 		
 		else{
 			for(int i = 0; i < boardTree.children.size(); i++){
+			    long elapsedTime = System.nanoTime() - moveStartTime;
+                double secondsElapsed = (double)elapsedTime / 1000000000.0;
+                if(this.timeLimit - secondsElapsed <= 2){return bestMin;}
 				int tmpUtilityScore = max(boardTree.children.get(i), alpha, bestMin);	
 				if(bestMin > tmpUtilityScore){
 					bestMin = tmpUtilityScore;
 				}
 				if(bestMin <= alpha){
-					return tmpUtilityScore;
+					return bestMin;
+				}
+				if(beta > tmpUtilityScore){
+				    beta = tmpUtilityScore;
 				}
 			}
 		}
