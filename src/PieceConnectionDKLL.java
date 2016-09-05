@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 
-public class PieceConnection {
-    ArrayList<BoardPoint> pieces;
+public class PieceConnectionDKLL {
+    ArrayList<BoardPointDKLL> pieces;
     int numAdjacentEmpty;
     
-    public PieceConnection(int empty){
+    public PieceConnectionDKLL(int empty){
         this.numAdjacentEmpty = empty;
-        pieces = new ArrayList<BoardPoint>();
+        pieces = new ArrayList<BoardPointDKLL>();
     }
     
-    public void AddPiece(BoardPoint piece){
+    public void AddPiece(BoardPointDKLL piece){
         this.pieces.add(piece);
     }
     
@@ -17,7 +17,7 @@ public class PieceConnection {
         this.numAdjacentEmpty += e;
     }
 
-    public ArrayList<BoardPoint> getPieces() {
+    public ArrayList<BoardPointDKLL> getPieces() {
         return pieces;
     }
 

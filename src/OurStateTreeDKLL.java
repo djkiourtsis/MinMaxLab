@@ -1,18 +1,18 @@
 import java.util.ArrayList;
 
 
-public class OurStateTree{
+public class OurStateTreeDKLL{
 	
 	StateTree state;
 	Move prevMove;
-	ArrayList<OurStateTree> children;
-	OurStateTree parent;
+	ArrayList<OurStateTreeDKLL> children;
+	OurStateTreeDKLL parent;
 	
-	public OurStateTree(StateTree state, Move prevMove) {
+	public OurStateTreeDKLL(StateTree state, Move prevMove) {
 		this.state = state;
 		this.prevMove = prevMove;
 		this.parent = null;
-		this.children = new ArrayList<OurStateTree>();
+		this.children = new ArrayList<OurStateTreeDKLL>();
 	}
 	
 	public StateTree getStateTree(){
@@ -69,7 +69,7 @@ public class OurStateTree{
 				}
 			}
 			childState.makeMove(move.get(i));
-			OurStateTree ourChild = new OurStateTree(childState, move.get(i));
+			OurStateTreeDKLL ourChild = new OurStateTreeDKLL(childState, move.get(i));
 			ourChild.parent = this;
 			this.children.add(ourChild);
 		}

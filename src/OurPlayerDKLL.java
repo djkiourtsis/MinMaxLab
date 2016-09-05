@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-public class OurPlayer extends Player{
+public class OurPlayerDKLL extends Player{
 	
 	//n = name of the player
 	//t = the number corresponding to your turn
@@ -9,7 +9,7 @@ public class OurPlayer extends Player{
     
 	private long moveStartTime;
 	
-	public OurPlayer(String n, int t, int l)
+	public OurPlayerDKLL(String n, int t, int l)
 	{
 		super(n, t, l);
 	}
@@ -26,7 +26,7 @@ public class OurPlayer extends Player{
 	    double secondsElapsed = (double)elapsedTime / 1000000000.0;
 	    Move bestMove = null; // Default if we can't run a search.
 	    for(int i = 1; i < depthLimit; i++){ // STOP AT DEPTH 7 DUE TO RUNNING OUT OF MEMORY.
-	        OurStateTree stateTree = new OurStateTree(state, null);
+	        OurStateTreeDKLL stateTree = new OurStateTreeDKLL(state, null);
 		    initializeStateTree(stateTree, i);
 		    if(bestMove == null){
 		        bestMove = stateTree.children.get(0).getPrevMove(); // Default move.
@@ -42,7 +42,7 @@ public class OurPlayer extends Player{
 		return bestMove;
 	}
 	
-	public void initializeStateTree(OurStateTree root, int d){ 
+	public void initializeStateTree(OurStateTreeDKLL root, int d){ 
 		if(d == 0){
 			return;
 		}
@@ -59,10 +59,10 @@ public class OurPlayer extends Player{
 	public Integer getUtilityScore(StateTree state){
 		Integer utilityScore = 0;
 		int opponentTurn = 1; // Assume opponent is turn 1
-		ArrayList<PieceConnection> connectionsFriendly = new ArrayList<PieceConnection>();
-		ArrayList<PieceConnection> connectionsOpponent = new ArrayList<PieceConnection>();
-		ArrayList<BoardPoint> poppableFriendly = new ArrayList<BoardPoint>();
-		ArrayList<BoardPoint> poppableOpponent = new ArrayList<BoardPoint>();
+		ArrayList<PieceConnectionDKLL> connectionsFriendly = new ArrayList<PieceConnectionDKLL>();
+		ArrayList<PieceConnectionDKLL> connectionsOpponent = new ArrayList<PieceConnectionDKLL>();
+		ArrayList<BoardPointDKLL> poppableFriendly = new ArrayList<BoardPointDKLL>();
+		ArrayList<BoardPointDKLL> poppableOpponent = new ArrayList<BoardPointDKLL>();
 		
 		int win = Referee.checkForWinner(state);
 		if(win>0){
@@ -82,12 +82,12 @@ public class OurPlayer extends Player{
 		//  Populate piece connections and poppable piece lists.
 		if(!state.pop1 && this.turn==1 || !state.pop2 && this.turn==2){ // Our player hasn't used pop move
     		for(int i = 0; i < state.columns; i++){
-    		    if(state.boardMatrix[0][i] == this.turn) {poppableFriendly.add(new BoardPoint(0,i));}
+    		    if(state.boardMatrix[0][i] == this.turn) {poppableFriendly.add(new BoardPointDKLL(0,i));}
     		}
 		}
 		if(!state.pop1 && opponentTurn==1 || !state.pop2 && opponentTurn==2){ // Opponent player hasn't used pop move
             for(int i = 0; i < state.columns; i++){
-                if(state.boardMatrix[0][i] == this.turn) {poppableOpponent.add(new BoardPoint(0,i));}
+                if(state.boardMatrix[0][i] == this.turn) {poppableOpponent.add(new BoardPointDKLL(0,i));}
             }
         }
 		populateCons(state, connectionsFriendly, connectionsOpponent);
@@ -135,21 +135,21 @@ public class OurPlayer extends Player{
 		return utilityScore;
 	}
 	
-	public void populateCons(StateTree board, ArrayList<PieceConnection> ally, ArrayList<PieceConnection> enemy){
+	public void populateCons(StateTree board, ArrayList<PieceConnectionDKLL> ally, ArrayList<PieceConnectionDKLL> enemy){
 		int lastPiece = -1;
 		int opponentTurn = 1; // Assume opponent is turn 1
-		PieceConnection currentConnection = new PieceConnection(0);
+		PieceConnectionDKLL currentConnection = new PieceConnectionDKLL(0);
         if(this.turn==1){opponentTurn=2;} // Opponent is turn 2 if we are turn 1
 		
 	    for(int r = 0; r < board.rows; r++){ // Loop rows
 		    for(int c = 0; c < board.columns; c++){
 		        
 		        if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
-		            currentConnection = new PieceConnection(lastPiece+1);
-		            currentConnection.AddPiece(new BoardPoint(r,c));
+		            currentConnection = new PieceConnectionDKLL(lastPiece+1);
+		            currentConnection.AddPiece(new BoardPointDKLL(r,c));
 		        }
 		        else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
-		            currentConnection.AddPiece(new BoardPoint(r,c));
+		            currentConnection.AddPiece(new BoardPointDKLL(r,c));
 		        }
 		        else{ // Ending a connection
 		            if(lastPiece == this.turn){
@@ -159,8 +159,8 @@ public class OurPlayer extends Player{
 		                }
 		                else{ // New opponent connection
 		                    ally.add(currentConnection);
-		                    currentConnection = new PieceConnection(0);
-		                    currentConnection.AddPiece(new BoardPoint(r,c));
+		                    currentConnection = new PieceConnectionDKLL(0);
+		                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
 		                }
 		            }
 		            if(lastPiece == opponentTurn){
@@ -170,8 +170,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New ally connection
                             enemy.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
 		            }
 		        }
@@ -190,11 +190,11 @@ public class OurPlayer extends Player{
             for(int r = 0; r < board.rows; r++){
                 
                 if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
-                    currentConnection = new PieceConnection(lastPiece+1);
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection = new PieceConnectionDKLL(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else{ // Ending a connection
                     if(lastPiece == this.turn){
@@ -204,8 +204,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New opponent connection
                             ally.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                     if(lastPiece == opponentTurn){
@@ -215,8 +215,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New ally connection
                             enemy.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                 }
@@ -243,11 +243,11 @@ public class OurPlayer extends Player{
 	        while(c < board.columns && r < board.rows){
                 
                 if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
-                    currentConnection = new PieceConnection(lastPiece+1);
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection = new PieceConnectionDKLL(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else{ // Ending a connection
                     if(lastPiece == this.turn){
@@ -257,8 +257,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New opponent connection
                             ally.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                     if(lastPiece == opponentTurn){
@@ -268,8 +268,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New ally connection
                             enemy.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                 }
@@ -298,11 +298,11 @@ public class OurPlayer extends Player{
 	        while(c < board.columns && r > 0){
                 
                 if(lastPiece < 1 && board.boardMatrix[r][c] > 0){ // Starting new connection
-                    currentConnection = new PieceConnection(lastPiece+1);
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection = new PieceConnectionDKLL(lastPiece+1);
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else if(lastPiece == board.boardMatrix[r][c]){ // Add to connection
-                    currentConnection.AddPiece(new BoardPoint(r,c));
+                    currentConnection.AddPiece(new BoardPointDKLL(r,c));
                 }
                 else{ // Ending a connection
                     if(lastPiece == this.turn){
@@ -312,8 +312,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New opponent connection
                             ally.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                     if(lastPiece == opponentTurn){
@@ -323,8 +323,8 @@ public class OurPlayer extends Player{
                         }
                         else{ // New ally connection
                             enemy.add(currentConnection);
-                            currentConnection = new PieceConnection(0);
-                            currentConnection.AddPiece(new BoardPoint(r,c));
+                            currentConnection = new PieceConnectionDKLL(0);
+                            currentConnection.AddPiece(new BoardPointDKLL(r,c));
                         }
                     }
                 }
@@ -344,7 +344,7 @@ public class OurPlayer extends Player{
 	    return;
 	}
 	
-	public Move miniMax(OurStateTree boardTree){
+	public Move miniMax(OurStateTreeDKLL boardTree){
 		Move best = null;
 
 		int bestUtility = Integer.MIN_VALUE;
@@ -363,7 +363,7 @@ public class OurPlayer extends Player{
 		return best;
 	}
 	
-	public Integer max(OurStateTree boardTree, Integer alpha, Integer beta){
+	public Integer max(OurStateTreeDKLL boardTree, Integer alpha, Integer beta){
 		Integer bestMax = Integer.MIN_VALUE;
 		if(boardTree.children.size() == 0){
 			return getUtilityScore(boardTree.getStateTree());
@@ -388,7 +388,7 @@ public class OurPlayer extends Player{
 		return bestMax;
 	}
 	
-	public Integer min(OurStateTree boardTree, Integer alpha, Integer beta){
+	public Integer min(OurStateTreeDKLL boardTree, Integer alpha, Integer beta){
 		Integer bestMin = Integer.MAX_VALUE;
 		if(boardTree.children.size() == 0){
 			return getUtilityScore(boardTree.getStateTree());

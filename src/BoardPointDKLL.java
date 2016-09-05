@@ -1,7 +1,7 @@
-public class BoardPoint {
+public class BoardPointDKLL {
 	int row, column;
 
-	public BoardPoint(int row, int column) {
+	public BoardPointDKLL(int row, int column) {
 		super();
 		this.row = row;
 		this.column = column;
